@@ -39,10 +39,32 @@ fn emit_done(window: &Window, tool_id: &str, success: bool, message: &str) {
     );
 }
 
+/// Get the Robodeck home directory
+fn robodeck_dir() -> PathBuf {
+    let home = dirs::home_dir().unwrap_or_else(|| PathBuf::from("."));
+    home.join(".robodeck")
+}
+
 /// Get the path to Robodeck's managed virtual environment
 fn venv_dir() -> PathBuf {
-    let home = dirs::home_dir().unwrap_or_else(|| PathBuf::from("."));
-    home.join(".robodeck").join("venv")
+    robodeck_dir().join("venv")
+}
+
+/// Get the path to Robodeck's npm prefix directory
+fn npm_prefix_dir() -> PathBuf {
+    robodeck_dir().join("npm-global")
+}
+
+/// Get the npm bin directory inside Robodeck's prefix
+fn npm_bin_dir() -> PathBuf {
+    #[cfg(target_os = "windows")]
+    {
+        npm_prefix_dir()
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        npm_prefix_dir().join("bin")
+    }
 }
 
 /// Get the pip binary inside the venv
@@ -110,6 +132,34 @@ fn ensure_venv(window: &Window, tool_id: &str) -> Result<(), String> {
     Ok(())
 }
 
+/// Ensure the Robodeck npm prefix directory exists
+fn ensure_npm_prefix(window: &Window, tool_id: &str) -> Result<(), String> {
+    let prefix = npm_prefix_dir();
+    if prefix.exists() {
+        return Ok(());
+    }
+
+    emit_log(window, tool_id, "Setting up Robodeck npm environment...");
+    emit_log(window, tool_id, &format!("Creating npm prefix at {}", prefix.display()));
+
+    std::fs::create_dir_all(&prefix).map_err(|e| format!("Failed to create npm directory: {}", e))?;
+
+    emit_log(window, tool_id, "[OK] npm environment ready.");
+    emit_log(window, tool_id, "");
+    Ok(())
+}
+
+/// Rewrite npm install -g to use Robodeck's prefix
+fn rewrite_npm_global(cmd: &str) -> String {
+    let trimmed = cmd.trim();
+    // npm install -g pkg -> npm install --prefix ~/.robodeck/npm-global -g pkg
+    if trimmed.starts_with("npm install") && trimmed.contains("-g") {
+        let prefix = npm_prefix_dir();
+        return trimmed.replacen("npm install", &format!("npm install --prefix {}", prefix.display()), 1);
+    }
+    trimmed.to_string()
+}
+
 fn which_exists(bin: &str) -> bool {
     #[cfg(target_os = "windows")]
     {
@@ -162,18 +212,25 @@ pub fn rewrite_launch_for_venv(cmd: &str) -> String {
         return format!("{}{}", venv_python(), rest);
     }
 
-    // Check if the command is a tool installed in the venv bin
+    // Check if the command is a tool installed in the venv bin or npm bin
     let first_word = trimmed.split_whitespace().next().unwrap_or("");
-    let venv_bin = {
+    let rest = &trimmed[first_word.len()..];
+
+    // Check Python venv
+    let venv_bin_path = {
         #[cfg(target_os = "windows")]
         { venv.join("Scripts").join(format!("{}.exe", first_word)) }
         #[cfg(not(target_os = "windows"))]
         { venv.join("bin").join(first_word) }
     };
+    if venv_bin_path.exists() {
+        return format!("{}{}", venv_bin_path.to_string_lossy(), rest);
+    }
 
-    if venv_bin.exists() {
-        let rest = &trimmed[first_word.len()..];
-        return format!("{}{}", venv_bin.to_string_lossy(), rest);
+    // Check npm global bin
+    let npm_bin_path = npm_bin_dir().join(first_word);
+    if npm_bin_path.exists() {
+        return format!("{}{}", npm_bin_path.to_string_lossy(), rest);
     }
 
     trimmed.to_string()
@@ -241,58 +298,46 @@ pub async fn run_install(window: Window, cmd: String, tool_id: String) -> Result
         return Err(e);
     }
 
-    let is_pip = cmd.trim().starts_with("pip")
-        || cmd.trim().starts_with("pip3")
-        || cmd.trim().starts_with("python")
-            && cmd.contains("-m pip");
+    let trimmed = cmd.trim();
+    let is_pip = trimmed.starts_with("pip")
+        || trimmed.starts_with("pip3")
+        || (trimmed.starts_with("python") && trimmed.contains("-m pip"));
+    let is_npm_global = trimmed.starts_with("npm install") && trimmed.contains("-g");
 
-    if is_pip {
-        // Ensure venv exists
+    // Resolve the command to use Robodeck-managed environments
+    let resolved = if is_pip {
         if let Err(e) = ensure_venv(&window, &tool_id) {
             emit_done(&window, &tool_id, false, &format!("[ERROR] {}", e));
             return Err(e);
         }
-
-        // Rewrite to use venv pip
-        let resolved = rewrite_for_venv(&cmd);
-        emit_log(&window, &tool_id, &format!("$ {}", resolved));
-        emit_log(&window, &tool_id, "");
-
-        match run_command_streaming(&window, &tool_id, &resolved) {
-            Ok(true) => {
-                emit_done(&window, &tool_id, true, "[OK] Install completed successfully.");
-                Ok(())
-            }
-            Ok(false) => {
-                let msg = "[FAILED] Install failed. Check the log above for details.";
-                emit_done(&window, &tool_id, false, msg);
-                Err(msg.to_string())
-            }
-            Err(e) => {
-                let msg = format!("[ERROR] {}", e);
-                emit_done(&window, &tool_id, false, &msg);
-                Err(msg)
-            }
+        rewrite_for_venv(&cmd)
+    } else if is_npm_global {
+        if let Err(e) = ensure_npm_prefix(&window, &tool_id) {
+            emit_done(&window, &tool_id, false, &format!("[ERROR] {}", e));
+            return Err(e);
         }
+        rewrite_npm_global(&cmd)
     } else {
-        // Non-pip installs (docker, npm, brew, etc.) — run directly
-        emit_log(&window, &tool_id, &format!("$ {}", cmd));
-        emit_log(&window, &tool_id, "");
+        cmd.clone()
+    };
 
-        match run_command_streaming(&window, &tool_id, &cmd) {
-            Ok(true) => {
-                emit_done(&window, &tool_id, true, "[OK] Install completed successfully.");
-                Ok(())
-            }
-            Ok(false) => {
-                let msg = "[FAILED] Install failed. Check the log above for details.";
-                emit_done(&window, &tool_id, false, msg);
-                Err(msg.to_string())
-            }
-            Err(e) => {
-                let msg = format!("[ERROR] {}", e);
-                emit_done(&window, &tool_id, false, &msg);
-                Err(msg)
+    emit_log(&window, &tool_id, &format!("$ {}", resolved));
+    emit_log(&window, &tool_id, "");
+
+    match run_command_streaming(&window, &tool_id, &resolved) {
+        Ok(true) => {
+            emit_done(&window, &tool_id, true, "[OK] Install completed successfully.");
+            Ok(())
+        }
+        Ok(false) => {
+            let msg = "[FAILED] Install failed. Check the log above for details.";
+            emit_done(&window, &tool_id, false, msg);
+            Err(msg.to_string())
+        }
+        Err(e) => {
+            let msg = format!("[ERROR] {}", e);
+            emit_done(&window, &tool_id, false, &msg);
+            Err(msg)
             }
         }
     }
