@@ -15,6 +15,7 @@ export const tauri = {
   getVersion: (cmd: string) => invoke<string | null>("get_version", { cmd }),
   runInstall: (cmd: string, toolId: string) =>
     invoke<void>("run_install", { cmd, toolId }),
+  getSystemInfo: () => invoke<Record<string, boolean>>("get_system_info"),
   onInstallLog: (cb: (e: InstallLogEvent) => void): Promise<UnlistenFn> =>
     listen<InstallLogEvent>("install_log", (e) => cb(e.payload)),
 };

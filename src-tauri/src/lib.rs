@@ -9,6 +9,7 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
             system::get_platform,
+            system::get_system_info,
             docker::check_docker_running,
             docker::docker_start,
             docker::docker_stop,

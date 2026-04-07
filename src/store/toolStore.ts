@@ -15,6 +15,7 @@ interface RobodeckState {
   loading: boolean;
   activeInstall: string | null;
   errors: Record<string, string | null>;
+  systemInfo: Record<string, boolean>;
 
   setPlatform: (p: string) => void;
   setManifests: (m: ToolManifest[]) => void;
@@ -30,6 +31,7 @@ interface RobodeckState {
   setLoading: (b: boolean) => void;
   setActiveInstall: (id: string | null) => void;
   setError: (id: string, msg: string | null) => void;
+  setSystemInfo: (info: Record<string, boolean>) => void;
 }
 
 export const useRobodeckStore = create<RobodeckState>((set) => ({
@@ -45,6 +47,7 @@ export const useRobodeckStore = create<RobodeckState>((set) => ({
   loading: true,
   activeInstall: null,
   errors: {},
+  systemInfo: {},
 
   setPlatform: (p) => set({ platform: p }),
   setManifests: (m) => set({ manifests: m }),
@@ -79,4 +82,5 @@ export const useRobodeckStore = create<RobodeckState>((set) => ({
   setActiveInstall: (id) => set({ activeInstall: id }),
   setError: (id, msg) =>
     set((state) => ({ errors: { ...state.errors, [id]: msg } })),
+  setSystemInfo: (info) => set({ systemInfo: info }),
 }));

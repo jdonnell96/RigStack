@@ -1,12 +1,13 @@
-use super::system::{shell_exec, validate_operation_command};
+use super::system::{resolve_command, shell_exec, validate_operation_command};
 use std::net::TcpStream;
 use std::time::Duration;
 
 #[tauri::command]
 pub async fn spawn_process(cmd: String) -> Result<u32, String> {
     validate_operation_command(&cmd)?;
-    let child = shell_exec(&cmd).spawn().map_err(|e| {
-        format!("Failed to start '{}': {}", cmd, e)
+    let resolved = resolve_command(&cmd).unwrap_or_else(|_| cmd.clone());
+    let child = shell_exec(&resolved).spawn().map_err(|e| {
+        format!("Failed to start '{}': {}", resolved, e)
     })?;
     Ok(child.id())
 }
@@ -86,7 +87,8 @@ pub async fn check_process_name(name: String) -> Result<bool, String> {
 #[tauri::command]
 pub async fn get_version(cmd: String) -> Result<Option<String>, String> {
     validate_operation_command(&cmd)?;
-    let output = shell_exec(&cmd).output().map_err(|e| e.to_string())?;
+    let resolved = resolve_command(&cmd).unwrap_or_else(|_| cmd.clone());
+    let output = shell_exec(&resolved).output().map_err(|e| e.to_string())?;
     if output.status.success() {
         let stdout = String::from_utf8_lossy(&output.stdout).trim().to_string();
         if stdout.is_empty() {

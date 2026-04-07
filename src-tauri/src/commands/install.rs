@@ -1,4 +1,4 @@
-use super::system::{shell_exec, validate_install_command};
+use super::system::{resolve_command, shell_exec, validate_install_command};
 use serde::Serialize;
 use std::io::{BufRead, BufReader};
 use tauri::{Emitter, Window};
@@ -41,18 +41,30 @@ fn emit_done(window: &Window, tool_id: &str, success: bool, message: &str) {
 
 #[tauri::command]
 pub async fn run_install(window: Window, cmd: String, tool_id: String) -> Result<(), String> {
-    // Validate command
+    // Validate the original command
     if let Err(e) = validate_install_command(&cmd) {
         emit_done(&window, &tool_id, false, &format!("[ERROR] {}", e));
         return Err(e);
     }
 
-    // Log the command being run
-    emit_log(&window, &tool_id, &format!("$ {}", cmd));
+    // Resolve to available system tools (e.g. pip -> pip3)
+    let resolved = match resolve_command(&cmd) {
+        Ok(r) => r,
+        Err(e) => {
+            emit_done(&window, &tool_id, false, &format!("[ERROR] {}", e));
+            return Err(e);
+        }
+    };
+
+    // Log the resolved command being run
+    if resolved != cmd {
+        emit_log(&window, &tool_id, &format!("Resolved: {} -> {}", cmd, resolved));
+    }
+    emit_log(&window, &tool_id, &format!("$ {}", resolved));
     emit_log(&window, &tool_id, "");
 
     // Spawn process
-    let mut child = match shell_exec(&cmd)
+    let mut child = match shell_exec(&resolved)
         .stdout(std::process::Stdio::piped())
         .stderr(std::process::Stdio::piped())
         .spawn()

@@ -8,15 +8,20 @@ export default function App() {
   const setPlatform = useRobodeckStore((s) => s.setPlatform);
   const setManifests = useRobodeckStore((s) => s.setManifests);
   const setLoading = useRobodeckStore((s) => s.setLoading);
+  const setSystemInfo = useRobodeckStore((s) => s.setSystemInfo);
 
   useEffect(() => {
     async function init() {
       setLoading(true);
       try {
-        const platform = await tauri.getPlatform();
+        const [platform, manifests, sysInfo] = await Promise.all([
+          tauri.getPlatform(),
+          fetchManifests(),
+          tauri.getSystemInfo(),
+        ]);
         setPlatform(platform);
-        const manifests = await fetchManifests();
         setManifests(manifests);
+        setSystemInfo(sysInfo);
       } catch (err) {
         console.error("Failed to initialize:", err);
       } finally {
@@ -24,7 +29,7 @@ export default function App() {
       }
     }
     init();
-  }, [setPlatform, setManifests, setLoading]);
+  }, [setPlatform, setManifests, setLoading, setSystemInfo]);
 
   return <Dashboard />;
 }
