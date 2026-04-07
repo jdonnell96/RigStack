@@ -299,6 +299,11 @@ pub async fn run_install(window: Window, cmd: String, tool_id: String) -> Result
     }
 
     let trimmed = cmd.trim();
+    if let Err(e) = validate_install_command(&cmd) {
+        emit_done(&window, &tool_id, false, &format!("[ERROR] {}", e));
+        return Err(e);
+    }
+
     let is_pip = trimmed.starts_with("pip")
         || trimmed.starts_with("pip3")
         || (trimmed.starts_with("python") && trimmed.contains("-m pip"));
@@ -331,6 +336,78 @@ pub async fn run_install(window: Window, cmd: String, tool_id: String) -> Result
         }
         Ok(false) => {
             let msg = "[FAILED] Install failed. Check the log above for details.";
+            emit_done(&window, &tool_id, false, msg);
+            Err(msg.to_string())
+        }
+        Err(e) => {
+            let msg = format!("[ERROR] {}", e);
+            emit_done(&window, &tool_id, false, &msg);
+            Err(msg)
+        }
+    }
+}
+
+/// Derive the uninstall command from the original install command
+fn derive_uninstall_cmd(install_cmd: &str) -> Option<String> {
+    let trimmed = install_cmd.trim();
+
+    // pip install pkg -> venv pip uninstall -y pkg
+    if trimmed.starts_with("pip install") || trimmed.starts_with("pip3 install") {
+        let package = trimmed.split_whitespace().last()?;
+        return Some(format!("{} uninstall -y {}", venv_pip(), package));
+    }
+
+    // python -m pip install pkg -> venv pip uninstall -y pkg
+    if trimmed.contains("-m pip install") {
+        let package = trimmed.split_whitespace().last()?;
+        return Some(format!("{} uninstall -y {}", venv_pip(), package));
+    }
+
+    // npm install -g pkg -> npm uninstall --prefix ~/.robodeck/npm-global -g pkg
+    if trimmed.starts_with("npm install") && trimmed.contains("-g") {
+        let package = trimmed.split_whitespace().last()?;
+        let prefix = npm_prefix_dir();
+        return Some(format!("npm uninstall --prefix {} -g {}", prefix.display(), package));
+    }
+
+    // docker pull image -> docker rmi image
+    if trimmed.starts_with("docker pull") {
+        let image = trimmed.strip_prefix("docker pull ")?.trim();
+        return Some(format!("docker rmi {}", image));
+    }
+
+    None
+}
+
+#[tauri::command]
+pub async fn run_uninstall(
+    window: Window,
+    install_cmd: String,
+    tool_id: String,
+) -> Result<(), String> {
+    let uninstall_cmd = match derive_uninstall_cmd(&install_cmd) {
+        Some(cmd) => cmd,
+        None => {
+            let msg = format!(
+                "[ERROR] Don't know how to uninstall '{}'. Remove manually.",
+                install_cmd
+            );
+            emit_done(&window, &tool_id, false, &msg);
+            return Err(msg);
+        }
+    };
+
+    emit_log(&window, &tool_id, &format!("Uninstalling {}...", tool_id));
+    emit_log(&window, &tool_id, &format!("$ {}", uninstall_cmd));
+    emit_log(&window, &tool_id, "");
+
+    match run_command_streaming(&window, &tool_id, &uninstall_cmd) {
+        Ok(true) => {
+            emit_done(&window, &tool_id, true, "[OK] Uninstall completed.");
+            Ok(())
+        }
+        Ok(false) => {
+            let msg = "[FAILED] Uninstall failed. Check the log above.";
             emit_done(&window, &tool_id, false, msg);
             Err(msg.to_string())
         }

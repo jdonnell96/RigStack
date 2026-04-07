@@ -20,6 +20,7 @@ pub fn run() {
             process::check_process_name,
             process::get_version,
             install::run_install,
+            install::run_uninstall,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

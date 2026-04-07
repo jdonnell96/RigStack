@@ -42,7 +42,9 @@ export function ToolTile({ manifest }: ToolTileProps) {
   const setActiveInstall = useRobodeckStore((s) => s.setActiveInstall);
   const lastError = useRobodeckStore((s) => s.errors[manifest.id]);
   const setError = useRobodeckStore((s) => s.setError);
+  const clearInstallLog = useRobodeckStore((s) => s.clearInstallLog);
   const [confirmCmd, setConfirmCmd] = useState<string | null>(null);
+  const [confirmUninstall, setConfirmUninstall] = useState(false);
 
   function getInstallCmd(): string {
     if (platform === "windows" && manifest.install_cmd_win) return manifest.install_cmd_win;
@@ -122,6 +124,21 @@ export function ToolTile({ manifest }: ToolTileProps) {
     }
   }
 
+  async function handleUninstall() {
+    setConfirmUninstall(false);
+    setError(manifest.id, null);
+    setStatus(manifest.id, "installing"); // reuse installing state for visual feedback
+    setActiveInstall(manifest.id);
+    clearInstallLog(manifest.id);
+    try {
+      await tauri.runUninstall(getInstallCmd(), manifest.id);
+      setStatus(manifest.id, "not_installed");
+    } catch (e) {
+      setStatus(manifest.id, "error");
+      setError(manifest.id, String(e));
+    }
+  }
+
   function handleOpen() {
     if (manifest.open_url) openUrl(manifest.open_url);
   }
@@ -169,7 +186,10 @@ export function ToolTile({ manifest }: ToolTileProps) {
             <ActionButton label="Install" onClick={handleInstall} variant="primary" />
           )}
           {status === "installed" && (
-            <ActionButton label="Launch" onClick={handleLaunch} variant="success" />
+            <>
+              <ActionButton label="Launch" onClick={handleLaunch} variant="success" />
+              <ActionButton label="Uninstall" onClick={() => setConfirmUninstall(true)} variant="danger" />
+            </>
           )}
           {status === "running" && (
             <>
@@ -231,6 +251,15 @@ export function ToolTile({ manifest }: ToolTileProps) {
           command={confirmCmd}
           onConfirm={() => executeInstall(confirmCmd)}
           onCancel={() => setConfirmCmd(null)}
+        />
+      )}
+
+      {confirmUninstall && (
+        <ConfirmDialog
+          title={`Uninstall ${manifest.name}?`}
+          command={`This will remove ${manifest.name} from your system.`}
+          onConfirm={handleUninstall}
+          onCancel={() => setConfirmUninstall(false)}
         />
       )}
     </>
