@@ -14,6 +14,7 @@ interface RobodeckState {
   tier: Tier;
   loading: boolean;
   activeInstall: string | null;
+  errors: Record<string, string | null>;
 
   setPlatform: (p: string) => void;
   setManifests: (m: ToolManifest[]) => void;
@@ -28,6 +29,7 @@ interface RobodeckState {
   setTier: (t: Tier) => void;
   setLoading: (b: boolean) => void;
   setActiveInstall: (id: string | null) => void;
+  setError: (id: string, msg: string | null) => void;
 }
 
 export const useRobodeckStore = create<RobodeckState>((set) => ({
@@ -42,6 +44,7 @@ export const useRobodeckStore = create<RobodeckState>((set) => ({
   tier: "free",
   loading: true,
   activeInstall: null,
+  errors: {},
 
   setPlatform: (p) => set({ platform: p }),
   setManifests: (m) => set({ manifests: m }),
@@ -74,4 +77,6 @@ export const useRobodeckStore = create<RobodeckState>((set) => ({
   setTier: (t) => set({ tier: t }),
   setLoading: (b) => set({ loading: b }),
   setActiveInstall: (id) => set({ activeInstall: id }),
+  setError: (id, msg) =>
+    set((state) => ({ errors: { ...state.errors, [id]: msg } })),
 }));

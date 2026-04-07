@@ -37,7 +37,11 @@ export function ToolTile({ manifest }: ToolTileProps) {
   const platform = useRobodeckStore((s) => s.platform);
   const setStatus = useRobodeckStore((s) => s.setToolStatus);
   const setPid = useRobodeckStore((s) => s.setPid);
+  const pids = useRobodeckStore((s) => s.pids);
+  const removePid = useRobodeckStore((s) => s.removePid);
   const setActiveInstall = useRobodeckStore((s) => s.setActiveInstall);
+  const lastError = useRobodeckStore((s) => s.errors[manifest.id]);
+  const setError = useRobodeckStore((s) => s.setError);
   const [confirmCmd, setConfirmCmd] = useState<string | null>(null);
 
   function getInstallCmd(): string {
@@ -57,40 +61,64 @@ export function ToolTile({ manifest }: ToolTileProps) {
 
   async function executeInstall(cmd: string) {
     setConfirmCmd(null);
+    setError(manifest.id, null);
     setStatus(manifest.id, "installing");
     setActiveInstall(manifest.id);
     try {
       await tauri.runInstall(cmd, manifest.id);
-    } catch {
+    } catch (e) {
       setStatus(manifest.id, "error");
+      setError(manifest.id, String(e));
+      setActiveInstall(manifest.id); // ensure drawer stays open to show error
     }
   }
 
   async function handleLaunch() {
+    setError(manifest.id, null);
     setStatus(manifest.id, "starting");
     try {
       if (manifest.launch_type === "url" && manifest.open_url) {
         openUrl(manifest.open_url);
         setStatus(manifest.id, "running");
       } else {
-        const pid = await tauri.spawnProcess(getLaunchCmd());
+        const cmd = getLaunchCmd();
+        if (!cmd) {
+          setStatus(manifest.id, "installed");
+          return;
+        }
+        const pid = await tauri.spawnProcess(cmd);
         setPid(manifest.id, pid);
+        // Health check will transition to "running"
       }
-    } catch {
+    } catch (e) {
       setStatus(manifest.id, "error");
+      setError(manifest.id, `Launch failed: ${e}`);
     }
   }
 
   async function handleStop() {
+    setError(manifest.id, null);
     setStatus(manifest.id, "stopping");
     try {
+      // Try stored PID first
+      const storedPid = pids[manifest.id];
+      if (storedPid) {
+        await tauri.killProcess(storedPid);
+        removePid(manifest.id);
+      }
+      // Also run stop_cmd if defined (for Docker containers, etc.)
       const stopCmd = platform === "windows" ? manifest.stop_cmd_win : manifest.stop_cmd;
       if (stopCmd) {
-        await tauri.spawnProcess(stopCmd);
+        try {
+          await tauri.spawnProcess(stopCmd);
+        } catch {
+          // stop_cmd failing is ok if PID kill worked
+        }
       }
       setStatus(manifest.id, "installed");
-    } catch {
+    } catch (e) {
       setStatus(manifest.id, "error");
+      setError(manifest.id, `Stop failed: ${e}`);
     }
   }
 
@@ -168,6 +196,13 @@ export function ToolTile({ manifest }: ToolTileProps) {
             <span className="text-xs text-gray-600 italic">Not available on {platform}</span>
           )}
         </div>
+
+        {/* Error message */}
+        {lastError && status === "error" && (
+          <div className="mb-3 px-2 py-1.5 rounded bg-status-red/10 border border-status-red/20">
+            <p className="text-[11px] text-status-red break-words">{lastError}</p>
+          </div>
+        )}
 
         {/* Links row */}
         <div className="flex items-center gap-3 pt-2 border-t border-surface-overlay/50">
