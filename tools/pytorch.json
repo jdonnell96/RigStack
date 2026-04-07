@@ -1,0 +1,17 @@
+{
+  "id": "pytorch",
+  "name": "PyTorch",
+  "version": "2.5.0",
+  "category": "train",
+  "description": "Deep learning framework for tensor computation and neural networks",
+  "icon": "pytorch.svg",
+  "tags": ["deep-learning", "training", "gpu", "neural-network", "tensor"],
+  "install_type": "pip",
+  "install_cmd": "pip install torch torchvision torchaudio",
+  "version_check_cmd": "python3 -c \"import torch; print(torch.__version__)\"",
+  "launch_type": "url",
+  "launch_cmd": "",
+  "health_check": { "type": "process", "target": "python", "interval_ms": 30000 },
+  "docs_url": "https://pytorch.org/docs/stable/",
+  "github_url": "https://github.com/pytorch/pytorch"
+}

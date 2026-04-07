@@ -1,0 +1,20 @@
+{
+  "id": "mlflow",
+  "name": "MLflow",
+  "version": "2.18.0",
+  "category": "train",
+  "description": "Platform for ML lifecycle including experiment tracking and model registry",
+  "icon": "mlflow.svg",
+  "tags": ["tracking", "experiments", "model-registry", "deployment", "mlops"],
+  "install_type": "pip",
+  "install_cmd": "pip install mlflow",
+  "version_check_cmd": "pip show mlflow",
+  "launch_type": "process",
+  "launch_cmd": "mlflow ui",
+  "stop_cmd": "pkill -f mlflow",
+  "stop_cmd_win": "taskkill /F /IM mlflow.exe",
+  "health_check": { "type": "http", "target": "http://localhost:5000", "interval_ms": 5000 },
+  "open_url": "http://localhost:5000",
+  "docs_url": "https://mlflow.org/docs/latest/",
+  "github_url": "https://github.com/mlflow/mlflow"
+}

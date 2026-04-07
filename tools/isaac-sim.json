@@ -1,0 +1,19 @@
+{
+  "id": "isaac-sim",
+  "name": "NVIDIA Isaac Sim",
+  "version": "4.2.0",
+  "category": "simulate",
+  "description": "GPU-accelerated robotics simulation built on NVIDIA Omniverse",
+  "icon": "isaac-sim.svg",
+  "tags": ["simulation", "nvidia", "omniverse", "gpu", "reinforcement-learning"],
+  "install_type": "docker",
+  "install_cmd": "docker pull nvcr.io/nvidia/isaac-sim:4.2.0",
+  "version_check_cmd": "docker image inspect nvcr.io/nvidia/isaac-sim:4.2.0",
+  "launch_type": "docker",
+  "launch_cmd": "docker run --gpus all -e DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix nvcr.io/nvidia/isaac-sim:4.2.0",
+  "stop_cmd": "docker stop isaac-sim",
+  "health_check": { "type": "process", "target": "isaac-sim", "interval_ms": 30000 },
+  "docs_url": "https://docs.omniverse.nvidia.com/isaacsim/latest/",
+  "github_url": "https://github.com/NVIDIA-Omniverse/IsaacSim",
+  "supported_os": ["windows", "linux"]
+}

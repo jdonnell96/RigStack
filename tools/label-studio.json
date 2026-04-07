@@ -1,0 +1,20 @@
+{
+  "id": "label-studio",
+  "name": "Label Studio",
+  "version": "1.14.0",
+  "category": "annotate",
+  "description": "Open source data labeling platform for images, text, audio, and video",
+  "icon": "label-studio.svg",
+  "tags": ["annotation", "labeling", "image", "video", "text", "audio"],
+  "install_type": "pip",
+  "install_cmd": "pip install label-studio",
+  "version_check_cmd": "pip show label-studio",
+  "launch_type": "process",
+  "launch_cmd": "label-studio start",
+  "stop_cmd": "pkill -f label-studio",
+  "stop_cmd_win": "taskkill /F /IM label-studio.exe",
+  "health_check": { "type": "http", "target": "http://localhost:8080", "interval_ms": 5000 },
+  "open_url": "http://localhost:8080",
+  "docs_url": "https://labelstud.io/guide/",
+  "github_url": "https://github.com/HumanSignal/label-studio"
+}

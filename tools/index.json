@@ -1,0 +1,17 @@
+[
+  "label-studio.json",
+  "cvat.json",
+  "rerun.json",
+  "foxglove.json",
+  "isaac-sim.json",
+  "gazebo.json",
+  "mujoco.json",
+  "ros2.json",
+  "pytorch.json",
+  "ultralytics.json",
+  "open3d.json",
+  "meshlab.json",
+  "jupyter.json",
+  "mlflow.json",
+  "docker-desktop.json"
+]

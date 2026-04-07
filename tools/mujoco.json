@@ -1,0 +1,18 @@
+{
+  "id": "mujoco",
+  "name": "MuJoCo",
+  "version": "3.2.0",
+  "category": "simulate",
+  "description": "Fast and accurate physics engine for robotics and RL research",
+  "icon": "mujoco.svg",
+  "tags": ["simulation", "physics", "reinforcement-learning", "control"],
+  "install_type": "pip",
+  "install_cmd": "pip install mujoco",
+  "version_check_cmd": "pip show mujoco",
+  "launch_type": "process",
+  "launch_cmd": "python -m mujoco.viewer",
+  "stop_cmd": "pkill -f mujoco",
+  "health_check": { "type": "process", "target": "mujoco", "interval_ms": 5000 },
+  "docs_url": "https://mujoco.readthedocs.io/",
+  "github_url": "https://github.com/google-deepmind/mujoco"
+}

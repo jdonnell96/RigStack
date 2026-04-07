@@ -1,0 +1,20 @@
+{
+  "id": "jupyter",
+  "name": "JupyterLab",
+  "version": "4.3.0",
+  "category": "infra",
+  "description": "Interactive notebook environment for data science and ML experimentation",
+  "icon": "jupyter.svg",
+  "tags": ["notebook", "interactive", "data-science", "python", "experimentation"],
+  "install_type": "pip",
+  "install_cmd": "pip install jupyterlab",
+  "version_check_cmd": "pip show jupyterlab",
+  "launch_type": "process",
+  "launch_cmd": "jupyter lab --no-browser",
+  "stop_cmd": "pkill -f jupyter-lab",
+  "stop_cmd_win": "taskkill /F /IM jupyter-lab.exe",
+  "health_check": { "type": "http", "target": "http://localhost:8888", "interval_ms": 5000 },
+  "open_url": "http://localhost:8888",
+  "docs_url": "https://jupyterlab.readthedocs.io/",
+  "github_url": "https://github.com/jupyterlab/jupyterlab"
+}

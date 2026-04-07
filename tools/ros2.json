@@ -1,0 +1,20 @@
+{
+  "id": "ros2",
+  "name": "ROS 2",
+  "version": "jazzy",
+  "category": "infra",
+  "description": "Robot Operating System middleware for robotics applications",
+  "icon": "ros2.svg",
+  "tags": ["middleware", "robotics", "ros", "communication", "nodes"],
+  "install_type": "docker",
+  "install_cmd": "docker pull ros:jazzy",
+  "install_cmd_linux": "apt install ros-jazzy-desktop",
+  "version_check_cmd": "docker image inspect ros:jazzy",
+  "launch_type": "docker",
+  "launch_cmd": "docker run -it ros:jazzy",
+  "stop_cmd": "docker stop ros2",
+  "health_check": { "type": "process", "target": "ros2", "interval_ms": 5000 },
+  "docs_url": "https://docs.ros.org/en/jazzy/",
+  "github_url": "https://github.com/ros2/ros2",
+  "supported_os": ["linux", "macos"]
+}

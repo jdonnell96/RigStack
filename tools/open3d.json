@@ -1,0 +1,17 @@
+{
+  "id": "open3d",
+  "name": "Open3D",
+  "version": "0.18.0",
+  "category": "capture",
+  "description": "3D data processing library for point clouds, meshes, and RGB-D",
+  "icon": "open3d.svg",
+  "tags": ["pointcloud", "3d", "mesh", "rgbd", "reconstruction"],
+  "install_type": "pip",
+  "install_cmd": "pip install open3d",
+  "version_check_cmd": "pip show open3d",
+  "launch_type": "url",
+  "launch_cmd": "",
+  "health_check": { "type": "process", "target": "open3d", "interval_ms": 30000 },
+  "docs_url": "https://www.open3d.org/docs/release/",
+  "github_url": "https://github.com/isl-org/Open3D"
+}

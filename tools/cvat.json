@@ -1,0 +1,19 @@
+{
+  "id": "cvat",
+  "name": "CVAT",
+  "version": "2.14.0",
+  "category": "annotate",
+  "description": "Computer vision annotation tool for images and video datasets",
+  "icon": "cvat.svg",
+  "tags": ["annotation", "computer-vision", "segmentation", "detection"],
+  "install_type": "docker",
+  "install_cmd": "docker pull cvat/server:latest",
+  "version_check_cmd": "docker image inspect cvat/server:latest",
+  "launch_type": "docker",
+  "launch_cmd": "docker start cvat_server",
+  "stop_cmd": "docker stop cvat_server",
+  "health_check": { "type": "http", "target": "http://localhost:8080", "interval_ms": 5000 },
+  "open_url": "http://localhost:8080",
+  "docs_url": "https://docs.cvat.ai/",
+  "github_url": "https://github.com/cvat-ai/cvat"
+}

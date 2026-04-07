@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pandoc /Users/jackdonnell/Downloads/robodeck-architecture.docx -o /tmp/robodeck-arch.md)",
+      "Bash(npm install:*)",
+      "Bash(export PATH=\"/usr/local/bin:/opt/homebrew/bin:$HOME/.cargo/bin:$HOME/.nvm/versions/node/*/bin:$PATH\")",
+      "Bash(export PATH=\"/usr/local/bin:/opt/homebrew/bin:$HOME/.cargo/bin:$PATH\")",
+      "Bash(npx tsc:*)",
+      "Bash(cargo check:*)",
+      "Read(//Users/jackdonnell/.cargo/bin/**)",
+      "Read(//opt/homebrew/bin/**)",
+      "Read(//usr/**)",
+      "Read(//opt/**)",
+      "Bash(export PATH=\"/usr/local/bin:/opt/homebrew/bin:$PATH\")",
+      "Bash(npx vite:*)",
+      "Bash(sips -z 16 16 icon.png --out icon.iconset/icon_16x16.png)",
+      "Bash(sips -z 32 32 icon.png --out icon.iconset/icon_16x16@2x.png)",
+      "Bash(sips -z 32 32 icon.png --out icon.iconset/icon_32x32.png)",
+      "Bash(sips -z 64 64 icon.png --out icon.iconset/icon_32x32@2x.png)",
+      "Bash(sips -z 128 128 icon.png --out icon.iconset/icon_128x128.png)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git rm:*)"
+    ]
+  }
+}

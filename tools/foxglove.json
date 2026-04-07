@@ -1,0 +1,18 @@
+{
+  "id": "foxglove",
+  "name": "Foxglove Studio",
+  "version": "2.5.0",
+  "category": "capture",
+  "description": "Robotics data visualization and debugging platform",
+  "icon": "foxglove.svg",
+  "tags": ["visualization", "ros", "robotics", "debugging", "mcap"],
+  "install_type": "npm",
+  "install_cmd": "npm install -g @foxglove/studio",
+  "version_check_cmd": "npm list -g @foxglove/studio",
+  "launch_type": "url",
+  "launch_cmd": "",
+  "health_check": { "type": "http", "target": "http://localhost:8765", "interval_ms": 5000 },
+  "open_url": "https://app.foxglove.dev",
+  "docs_url": "https://docs.foxglove.dev/",
+  "github_url": "https://github.com/foxglove/studio"
+}
