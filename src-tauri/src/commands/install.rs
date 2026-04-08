@@ -103,19 +103,30 @@ fn ensure_venv(window: &Window, tool_id: &str) -> Result<(), String> {
     emit_log(window, tool_id, "Setting up RigStack Python environment...");
     emit_log(window, tool_id, &format!("Creating venv at {}", venv.display()));
 
-    // Create parent directory
-    if let Some(parent) = venv.parent() {
-        std::fs::create_dir_all(parent).map_err(|e| format!("Failed to create directory: {}", e))?;
-    }
+    // Create the full directory path
+    std::fs::create_dir_all(venv.parent().unwrap_or(&venv))
+        .map_err(|e| format!("Failed to create directory: {}", e))?;
 
-    // Find python3 or python
-    let python = if which_exists("python3") {
-        "python3"
-    } else if which_exists("python") {
-        "python"
+    // Find python — on Windows it's usually "python", on Unix "python3"
+    let python = if cfg!(target_os = "windows") {
+        if which_exists("python") {
+            "python"
+        } else if which_exists("python3") {
+            "python3"
+        } else {
+            return Err("Python is not installed. Install Python 3 from python.org".to_string());
+        }
     } else {
-        return Err("Python is not installed. Install Python 3 from python.org".to_string());
+        if which_exists("python3") {
+            "python3"
+        } else if which_exists("python") {
+            "python"
+        } else {
+            return Err("Python is not installed. Install Python 3 from python.org".to_string());
+        }
     };
+
+    emit_log(window, tool_id, &format!("Using: {}", python));
 
     let mut venv_cmd = std::process::Command::new(python);
     venv_cmd.args(["-m", "venv", &venv.to_string_lossy()]);
@@ -129,7 +140,16 @@ fn ensure_venv(window: &Window, tool_id: &str) -> Result<(), String> {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        emit_log(window, tool_id, &format!("[ERROR] stdout: {}", stdout));
+        emit_log(window, tool_id, &format!("[ERROR] stderr: {}", stderr));
         return Err(format!("Failed to create venv: {}", stderr));
+    }
+
+    // Verify the venv was actually created
+    let pip_path = venv_pip();
+    if !std::path::Path::new(&pip_path).exists() {
+        return Err(format!("Venv created but pip not found at {}. Python may be missing the venv module. Try: {} -m ensurepip", pip_path, python));
     }
 
     emit_log(window, tool_id, "[OK] Python environment ready.");
@@ -396,6 +416,12 @@ fn derive_uninstall_cmd(install_cmd: &str) -> Option<String> {
     if trimmed.starts_with("apt install") || trimmed.starts_with("apt-get install") {
         let package = trimmed.split_whitespace().last()?;
         return Some(format!("apt remove -y {}", package));
+    }
+
+    // winget install -e --id Pkg -> winget uninstall -e --id Pkg
+    if trimmed.starts_with("winget install") {
+        let id = trimmed.split_whitespace().last()?;
+        return Some(format!("winget uninstall -e --id {}", id));
     }
 
     None

@@ -9,6 +9,7 @@
   "install_type": "brew",
   "install_cmd": "brew install --cask meshlab",
   "install_cmd_linux": "apt install -y meshlab",
+  "install_cmd_win": "winget install -e --id CNRI.MeshLab",
   "version_check_cmd": "meshlab --version",
   "launch_type": "process",
   "launch_cmd": "open -a MeshLab",

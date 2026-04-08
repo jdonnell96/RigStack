@@ -196,6 +196,7 @@ const INSTALL_PREFIXES: &[&str] = &[
     "brew install",
     "apt install",
     "apt-get install",
+    "winget install",
     "git clone",
     "cargo install",
 ];

@@ -9,6 +9,7 @@
   "install_type": "manual",
   "install_cmd": "brew install --cask docker",
   "install_cmd_linux": "apt install -y docker.io",
+  "install_cmd_win": "winget install -e --id Docker.DockerDesktop",
   "version_check_cmd": "docker --version",
   "launch_type": "url",
   "open_url": "https://www.docker.com/products/docker-desktop/",
