@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 
-$repo = "jdonnell96/RigStack"
+$repo = "jdonnell96/Robodeck"
 $apiUrl = "https://api.github.com/repos/$repo/releases/latest"
 
 try {

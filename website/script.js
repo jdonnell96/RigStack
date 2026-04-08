@@ -14,10 +14,11 @@
     os = 'windows';
   }
 
+  const raw = 'https://raw.githubusercontent.com/jdonnell96/Robodeck/main/website';
   const commands = {
-    mac: 'curl -fsSL https://rigstack.dev/install.sh | sh',
-    linux: 'curl -fsSL https://rigstack.dev/install.sh | sh',
-    windows: 'irm https://rigstack.dev/install.ps1 | iex',
+    mac: `curl -fsSL ${raw}/install.sh | sh`,
+    linux: `curl -fsSL ${raw}/install.sh | sh`,
+    windows: `irm ${raw}/install.ps1 | iex`,
   };
 
   const labels = {
