@@ -202,6 +202,35 @@ fn which_exists(bin: &str) -> bool {
     }
 }
 
+/// On Windows, rewrite pip commands to use `python -m pip` (more reliable than bare pip)
+fn rewrite_pip_for_windows(cmd: &str) -> String {
+    let trimmed = cmd.trim();
+
+    // Determine which python to use
+    let python = if which_exists("python") {
+        "python"
+    } else if which_exists("py") {
+        "py"
+    } else {
+        // Fall back — let it fail with a clear error
+        return trimmed.to_string();
+    };
+
+    // pip install X -> python -m pip install X
+    if trimmed.starts_with("pip3 install") || trimmed.starts_with("pip install") {
+        let idx = trimmed.find("install").unwrap();
+        let rest = &trimmed[idx..]; // "install ..."
+        return format!("{} -m pip {}", python, rest);
+    }
+
+    // python -m pip install X -> already fine
+    if trimmed.contains("-m pip") {
+        return trimmed.to_string();
+    }
+
+    trimmed.to_string()
+}
+
 /// Rewrite a pip/python command to use the RigStack venv
 fn rewrite_for_venv(cmd: &str) -> String {
     let trimmed = cmd.trim();
@@ -226,34 +255,49 @@ fn rewrite_for_venv(cmd: &str) -> String {
     trimmed.to_string()
 }
 
-/// Rewrite a launch command to use venv python/tools
+/// Rewrite a launch command to use venv python/tools (or system Python on Windows)
 pub fn rewrite_launch_for_venv(cmd: &str) -> String {
     let trimmed = cmd.trim();
-    let venv = venv_dir();
 
-    // python -m module -> venv python -m module
+    // python -m module -> resolve to correct python
     if trimmed.starts_with("python -m ") || trimmed.starts_with("python3 -m ") {
         let rest = if trimmed.starts_with("python3") {
             &trimmed[7..]
         } else {
             &trimmed[6..]
         };
-        return format!("{}{}", venv_python(), rest);
+
+        #[cfg(target_os = "windows")]
+        {
+            // On Windows, use system python directly
+            let python = if which_exists("python") {
+                "python"
+            } else if which_exists("py") {
+                "py"
+            } else {
+                "python"
+            };
+            return format!("{}{}", python, rest);
+        }
+        #[cfg(not(target_os = "windows"))]
+        {
+            return format!("{}{}", venv_python(), rest);
+        }
     }
 
     // Check if the command is a tool installed in the venv bin or npm bin
     let first_word = trimmed.split_whitespace().next().unwrap_or("");
     let rest = &trimmed[first_word.len()..];
 
-    // Check Python venv
-    let venv_bin_path = {
-        #[cfg(target_os = "windows")]
-        { venv.join("Scripts").join(format!("{}.exe", first_word)) }
-        #[cfg(not(target_os = "windows"))]
-        { venv.join("bin").join(first_word) }
-    };
-    if venv_bin_path.exists() {
-        return format!("{}{}", venv_bin_path.to_string_lossy(), rest);
+    // On Windows, pip-installed tools go into Python's Scripts dir (on PATH)
+    // On Unix, check the venv bin
+    #[cfg(not(target_os = "windows"))]
+    {
+        let venv = venv_dir();
+        let venv_bin_path = venv.join("bin").join(first_word);
+        if venv_bin_path.exists() {
+            return format!("{}{}", venv_bin_path.to_string_lossy(), rest);
+        }
     }
 
     // Check npm global bin
@@ -340,12 +384,20 @@ pub async fn run_install(window: Window, cmd: String, tool_id: String) -> Result
     let is_npm_global = trimmed.starts_with("npm install") && trimmed.contains("-g");
 
     // Resolve the command to use RigStack-managed environments
+    // On Windows, pip works system-wide (no PEP 668), so skip venv
     let resolved = if is_pip {
-        if let Err(e) = ensure_venv(&window, &tool_id) {
-            emit_done(&window, &tool_id, false, &format!("[ERROR] {}", e));
-            return Err(e);
+        #[cfg(target_os = "windows")]
+        {
+            rewrite_pip_for_windows(&cmd)
         }
-        rewrite_for_venv(&cmd)
+        #[cfg(not(target_os = "windows"))]
+        {
+            if let Err(e) = ensure_venv(&window, &tool_id) {
+                emit_done(&window, &tool_id, false, &format!("[ERROR] {}", e));
+                return Err(e);
+            }
+            rewrite_for_venv(&cmd)
+        }
     } else if is_npm_global {
         if let Err(e) = ensure_npm_prefix(&window, &tool_id) {
             emit_done(&window, &tool_id, false, &format!("[ERROR] {}", e));
@@ -381,16 +433,36 @@ pub async fn run_install(window: Window, cmd: String, tool_id: String) -> Result
 fn derive_uninstall_cmd(install_cmd: &str) -> Option<String> {
     let trimmed = install_cmd.trim();
 
-    // pip install pkg -> venv pip uninstall -y pkg
+    // pip install pkg -> uninstall via pip
     if trimmed.starts_with("pip install") || trimmed.starts_with("pip3 install") {
         let package = trimmed.split_whitespace().last()?;
-        return Some(format!("{} uninstall -y {}", venv_pip(), package));
+        #[cfg(target_os = "windows")]
+        {
+            let python = if which_exists("python") { "python" }
+                else if which_exists("py") { "py" }
+                else { "python" };
+            return Some(format!("{} -m pip uninstall -y {}", python, package));
+        }
+        #[cfg(not(target_os = "windows"))]
+        {
+            return Some(format!("{} uninstall -y {}", venv_pip(), package));
+        }
     }
 
-    // python -m pip install pkg -> venv pip uninstall -y pkg
+    // python -m pip install pkg -> pip uninstall
     if trimmed.contains("-m pip install") {
         let package = trimmed.split_whitespace().last()?;
-        return Some(format!("{} uninstall -y {}", venv_pip(), package));
+        #[cfg(target_os = "windows")]
+        {
+            let python = if which_exists("python") { "python" }
+                else if which_exists("py") { "py" }
+                else { "python" };
+            return Some(format!("{} -m pip uninstall -y {}", python, package));
+        }
+        #[cfg(not(target_os = "windows"))]
+        {
+            return Some(format!("{} uninstall -y {}", venv_pip(), package));
+        }
     }
 
     // npm install -g pkg -> npm uninstall --prefix ~/.rigstack/npm-global -g pkg
