@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 
-$repo = "jdonnell96/Robodeck"
+$repo = "jdonnell96/RigStack"
 $apiUrl = "https://api.github.com/repos/$repo/releases/latest"
 
 try {
@@ -15,10 +15,10 @@ try {
 
 $version = $tag -replace "^v", ""
 Write-Host ""
-Write-Host "  Robodeck $tag"
+Write-Host "  RigStack $tag"
 Write-Host ""
 
-$asset = "Robodeck_${version}_x64-setup.exe"
+$asset = "RigStack_${version}_x64-setup.exe"
 $url = "https://github.com/$repo/releases/download/$tag/$asset"
 $outPath = "$env:TEMP\$asset"
 
@@ -29,6 +29,6 @@ Write-Host "  Running installer..."
 Start-Process -FilePath $outPath -Wait
 
 Write-Host ""
-Write-Host "  Done. Robodeck has been installed."
+Write-Host "  Done. RigStack has been installed."
 Write-Host "  You can find it in your Start Menu."
 Write-Host ""

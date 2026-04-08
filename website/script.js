@@ -15,9 +15,9 @@
   }
 
   const commands = {
-    mac: 'curl -fsSL https://robodeck.dev/install.sh | sh',
-    linux: 'curl -fsSL https://robodeck.dev/install.sh | sh',
-    windows: 'irm https://robodeck.dev/install.ps1 | iex',
+    mac: 'curl -fsSL https://rigstack.dev/install.sh | sh',
+    linux: 'curl -fsSL https://rigstack.dev/install.sh | sh',
+    windows: 'irm https://rigstack.dev/install.ps1 | iex',
   };
 
   const labels = {

@@ -1,8 +1,8 @@
-# Robodeck
+# RigStack
 
 **One dashboard for your entire robotics ML stack.**
 
-Robodeck is a desktop application that lets robotics and ML engineers install, launch, monitor, and manage their full tool stack from a single GUI. No terminal required. It ships as a lightweight native binary (~15 MB) for Mac, Windows, and Linux.
+RigStack is a desktop application that lets robotics and ML engineers install, launch, monitor, and manage their full tool stack from a single GUI. No terminal required. It ships as a lightweight native binary (~15 MB) for Mac, Windows, and Linux.
 
 <!-- Screenshot here -->
 
@@ -10,18 +10,18 @@ Robodeck is a desktop application that lets robotics and ML engineers install, l
 
 ## Features
 
-- **One-click install** -- Set up 15+ robotics and ML tools with a single click. Robodeck handles package managers, Docker images, and dependencies behind the scenes.
+- **One-click install** -- Set up 15+ robotics and ML tools with a single click. RigStack handles package managers, Docker images, and dependencies behind the scenes.
 - **Live monitoring** -- Real-time health checks and status indicators show which tools are running, stopped, or need attention.
 - **Cross-platform** -- Native builds for macOS, Windows, and Linux from one codebase.
-- **Curated catalog** -- Every tool manifest is authored and reviewed by the Robodeck team. No arbitrary code execution.
+- **Curated catalog** -- Every tool manifest is authored and reviewed by the RigStack team. No arbitrary code execution.
 - **Secure by design** -- All commands are validated against an allowlist in Rust before execution. Shell metacharacters are blocked. A consent dialog is shown before every install or launch.
 - **Lightweight** -- ~15 MB binary, powered by Tauri 2.x. No Electron, no bundled Chromium.
 
 ## Quick Install
 
-Download the latest release for your platform from the [Releases page](https://github.com/jdonnell96/Robodeck/releases).
+Download the latest release for your platform from the [Releases page](https://github.com/jdonnell96/RigStack/releases).
 
-A CLI installer via [robodeck.dev](https://robodeck.dev) is coming soon.
+A CLI installer via [rigstack.dev](https://rigstack.dev) is coming soon.
 
 ## Supported Tools
 
@@ -47,7 +47,7 @@ A CLI installer via [robodeck.dev](https://robodeck.dev) is coming soon.
 
 1. **Manifests** -- Tool definitions are JSON files that describe how to install, launch, health-check, and stop each tool. Manifests are fetched from GitHub at runtime, so the catalog can grow without app updates.
 2. **Validated commands** -- Before any command runs, the Rust backend checks it against an allowlist of known package-manager prefixes (`pip install`, `docker pull`, `brew install`, etc.) and blocks shell metacharacters.
-3. **Managed environments** -- pip packages are installed into a dedicated virtual environment at `~/.robodeck/venv`. npm global packages use a custom prefix at `~/.robodeck/npm-global`. Your system Python and global npm are never modified.
+3. **Managed environments** -- pip packages are installed into a dedicated virtual environment at `~/.rigstack/venv`. npm global packages use a custom prefix at `~/.rigstack/npm-global`. Your system Python and global npm are never modified.
 4. **User consent** -- A confirmation dialog shows the exact command before execution. Nothing runs without your approval.
 
 ## Development
@@ -74,10 +74,10 @@ Production builds output platform-specific installers to `src-tauri/target/relea
 
 ## Architecture
 
-Robodeck is built with [Tauri 2.x](https://v2.tauri.app/), which pairs a Rust backend with a web-based frontend rendered through the system webview.
+RigStack is built with [Tauri 2.x](https://v2.tauri.app/), which pairs a Rust backend with a web-based frontend rendered through the system webview.
 
 ```
-robodeck/
+rigstack/
   src/              React 18 + TypeScript (strict) + Tailwind CSS
   src-tauri/        Rust backend (Tauri commands, security validation)
   tools/            Tool manifest JSON files
@@ -95,9 +95,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute.
 
 ## Links
 
-- **Website:** [robodeck.dev](https://robodeck.dev)
-- **Discord:** [discord.gg/robodeck](https://discord.gg/robodeck)
-- **Twitter/X:** [@robodeck](https://twitter.com/robodeck)
+- **Website:** [rigstack.dev](https://rigstack.dev)
+- **Discord:** [discord.gg/rigstack](https://discord.gg/rigstack)
+- **Twitter/X:** [@rigstack](https://twitter.com/rigstack)
 - **Security:** [docs/SECURITY.md](docs/SECURITY.md)
 
 ## License

@@ -1,10 +1,10 @@
 import { openUrl } from "../lib/shell";
 
 const LINKS = {
-  discord: "https://discord.gg/robodeck",
-  x: "https://x.com/robodeck",
-  feedback: "https://github.com/jdonnell96/Robodeck/issues/new?labels=feedback&template=feedback.md&title=%5BFeedback%5D+",
-  submitRepo: "https://github.com/jdonnell96/Robodeck/issues/new?labels=tool-request&template=tool-request.md&title=%5BTool+Request%5D+",
+  discord: "https://discord.gg/rigstack",
+  x: "https://x.com/rigstack",
+  feedback: "https://github.com/jdonnell96/RigStack/issues/new?labels=feedback&template=feedback.md&title=%5BFeedback%5D+",
+  submitRepo: "https://github.com/jdonnell96/RigStack/issues/new?labels=tool-request&template=tool-request.md&title=%5BTool+Request%5D+",
 };
 
 export function SidebarLinks() {

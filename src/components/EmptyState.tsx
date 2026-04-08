@@ -1,8 +1,8 @@
-import { useRobodeckStore } from "../store/toolStore";
+import { useRigstackStore } from "../store/toolStore";
 
 export function EmptyState() {
-  const manifests = useRobodeckStore((s) => s.manifests);
-  const search = useRobodeckStore((s) => s.search);
+  const manifests = useRigstackStore((s) => s.manifests);
+  const search = useRigstackStore((s) => s.search);
 
   if (manifests.length === 0) {
     return (

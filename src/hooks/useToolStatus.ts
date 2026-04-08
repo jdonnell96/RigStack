@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useRobodeckStore } from "../store/toolStore";
+import { useRigstackStore } from "../store/toolStore";
 import { tauri } from "../lib/tauri";
 import type { ToolManifest } from "../types/tool";
 
@@ -22,9 +22,9 @@ async function runHealthCheck(manifest: ToolManifest): Promise<boolean> {
 }
 
 export function useHealthCheckPoller() {
-  const manifests = useRobodeckStore((s) => s.manifests);
-  const statuses = useRobodeckStore((s) => s.statuses);
-  const setToolStatus = useRobodeckStore((s) => s.setToolStatus);
+  const manifests = useRigstackStore((s) => s.manifests);
+  const statuses = useRigstackStore((s) => s.statuses);
+  const setToolStatus = useRigstackStore((s) => s.setToolStatus);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {

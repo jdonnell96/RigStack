@@ -1,6 +1,6 @@
 # Supported Tools
 
-Robodeck ships with manifests for the following 15 tools. Each manifest defines the install command, launch behavior, health checks, and platform support.
+RigStack ships with manifests for the following 15 tools. Each manifest defines the install command, launch behavior, health checks, and platform support.
 
 ## Annotation
 
@@ -55,7 +55,7 @@ Tools marked with platform-specific install commands (e.g., `install_cmd_linux`)
 Tool manifests are JSON files in the `tools/` directory. Each manifest specifies:
 
 - `id`, `name`, `version`, `category`, `description`
-- `install_type` and `install_cmd` (the command Robodeck runs to install)
+- `install_type` and `install_cmd` (the command RigStack runs to install)
 - `launch_type` and `launch_cmd` (how the tool is started)
 - `health_check` (HTTP, port, or process-based liveness check)
 - `stop_cmd` (how to gracefully stop the tool)

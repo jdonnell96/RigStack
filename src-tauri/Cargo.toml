@@ -1,10 +1,10 @@
 [package]
-name = "robodeck"
+name = "rigstack"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "robodeck_lib"
+name = "rigstack_lib"
 crate-type = ["lib", "cdylib", "staticlib"]
 
 [build-dependencies]

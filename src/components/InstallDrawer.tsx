@@ -1,15 +1,15 @@
-import { useRobodeckStore } from "../store/toolStore";
+import { useRigstackStore } from "../store/toolStore";
 import { useInstallLog } from "../hooks/useInstallLog";
 import { useEffect, useRef } from "react";
 
 export function InstallDrawer() {
-  const activeInstall = useRobodeckStore((s) => s.activeInstall);
-  const manifests = useRobodeckStore((s) => s.manifests);
-  const logs = useRobodeckStore((s) =>
+  const activeInstall = useRigstackStore((s) => s.activeInstall);
+  const manifests = useRigstackStore((s) => s.manifests);
+  const logs = useRigstackStore((s) =>
     activeInstall ? s.installLogs[activeInstall] ?? [] : []
   );
-  const setActiveInstall = useRobodeckStore((s) => s.setActiveInstall);
-  const status = useRobodeckStore((s) =>
+  const setActiveInstall = useRigstackStore((s) => s.setActiveInstall);
+  const status = useRigstackStore((s) =>
     activeInstall ? s.statuses[activeInstall] : null
   );
   const logEndRef = useRef<HTMLDivElement>(null);

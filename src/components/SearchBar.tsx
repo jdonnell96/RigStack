@@ -1,8 +1,8 @@
-import { useRobodeckStore } from "../store/toolStore";
+import { useRigstackStore } from "../store/toolStore";
 
 export function SearchBar() {
-  const search = useRobodeckStore((s) => s.search);
-  const setSearch = useRobodeckStore((s) => s.setSearch);
+  const search = useRigstackStore((s) => s.search);
+  const setSearch = useRigstackStore((s) => s.setSearch);
 
   return (
     <input

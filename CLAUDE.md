@@ -1,7 +1,7 @@
-# Robodeck — Claude Code Context
+# RigStack — Claude Code Context
 
 ## What This Is
-Robodeck is a Tauri 2.x desktop app (Rust backend + React frontend) for robotics ML engineers to manage their tool stack. Targets Mac, Windows, and Linux.
+RigStack is a Tauri 2.x desktop app (Rust backend + React frontend) for robotics ML engineers to manage their tool stack. Targets Mac, Windows, and Linux.
 
 ## Architecture Decisions (Do Not Change Without Instruction)
 - **Framework:** Tauri 2.x (~15MB binary)
@@ -10,13 +10,13 @@ Robodeck is a Tauri 2.x desktop app (Rust backend + React frontend) for robotics
 - **Styling:** Tailwind only. No CSS modules, no styled-components
 - **Package manager:** npm (frontend) + Cargo (Rust)
 - **Tool definitions:** JSON manifests fetched from GitHub at runtime, cached locally
-- **Security model:** Curated catalog only. Robodeck team authors all manifests. Command allowlist in Rust. User consent dialog before any execution.
+- **Security model:** Curated catalog only. RigStack team authors all manifests. Command allowlist in Rust. User consent dialog before any execution.
 
 ## Key Patterns
 - `src/lib/tauri.ts` is the ONLY place `invoke()` is called
 - All Rust commands return `Result<T, String>` — no unwrap/panic
 - Platform branching only in `src-tauri/src/commands/system.rs`
-- `useRobodeckStore` is the single Zustand store
+- `useRigStackStore` is the single Zustand store
 - Monetization gated via `ProGate` component + `useFeature` hook (v0.1 always "free")
 - Manifests fetched from GitHub, cached in localStorage with 1hr TTL
 

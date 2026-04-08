@@ -1,6 +1,6 @@
 ---
 name: Tool Request
-about: Suggest a tool or repo to add to the Robodeck catalog
+about: Suggest a tool or repo to add to the RigStack catalog
 title: "[Tool Request] "
 labels: tool-request
 assignees: ""

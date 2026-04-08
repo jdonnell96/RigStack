@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Default permissions for Robodeck",
+  "description": "Default permissions for RigStack",
   "windows": ["main"],
   "permissions": [
     "core:default",

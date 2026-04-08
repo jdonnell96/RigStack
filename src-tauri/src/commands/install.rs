@@ -39,23 +39,23 @@ fn emit_done(window: &Window, tool_id: &str, success: bool, message: &str) {
     );
 }
 
-/// Get the Robodeck home directory
-fn robodeck_dir() -> PathBuf {
+/// Get the RigStack home directory
+fn rigstack_dir() -> PathBuf {
     let home = dirs::home_dir().unwrap_or_else(|| PathBuf::from("."));
-    home.join(".robodeck")
+    home.join(".rigstack")
 }
 
-/// Get the path to Robodeck's managed virtual environment
+/// Get the path to RigStack's managed virtual environment
 fn venv_dir() -> PathBuf {
-    robodeck_dir().join("venv")
+    rigstack_dir().join("venv")
 }
 
-/// Get the path to Robodeck's npm prefix directory
+/// Get the path to RigStack's npm prefix directory
 fn npm_prefix_dir() -> PathBuf {
-    robodeck_dir().join("npm-global")
+    rigstack_dir().join("npm-global")
 }
 
-/// Get the npm bin directory inside Robodeck's prefix
+/// Get the npm bin directory inside RigStack's prefix
 fn npm_bin_dir() -> PathBuf {
     #[cfg(target_os = "windows")]
     {
@@ -93,14 +93,14 @@ fn venv_python() -> String {
     }
 }
 
-/// Ensure the Robodeck venv exists, create it if not
+/// Ensure the RigStack venv exists, create it if not
 fn ensure_venv(window: &Window, tool_id: &str) -> Result<(), String> {
     let venv = venv_dir();
     if venv.join("bin").exists() || venv.join("Scripts").exists() {
         return Ok(());
     }
 
-    emit_log(window, tool_id, "Setting up Robodeck Python environment...");
+    emit_log(window, tool_id, "Setting up RigStack Python environment...");
     emit_log(window, tool_id, &format!("Creating venv at {}", venv.display()));
 
     // Create parent directory
@@ -132,14 +132,14 @@ fn ensure_venv(window: &Window, tool_id: &str) -> Result<(), String> {
     Ok(())
 }
 
-/// Ensure the Robodeck npm prefix directory exists
+/// Ensure the RigStack npm prefix directory exists
 fn ensure_npm_prefix(window: &Window, tool_id: &str) -> Result<(), String> {
     let prefix = npm_prefix_dir();
     if prefix.exists() {
         return Ok(());
     }
 
-    emit_log(window, tool_id, "Setting up Robodeck npm environment...");
+    emit_log(window, tool_id, "Setting up RigStack npm environment...");
     emit_log(window, tool_id, &format!("Creating npm prefix at {}", prefix.display()));
 
     std::fs::create_dir_all(&prefix).map_err(|e| format!("Failed to create npm directory: {}", e))?;
@@ -149,10 +149,10 @@ fn ensure_npm_prefix(window: &Window, tool_id: &str) -> Result<(), String> {
     Ok(())
 }
 
-/// Rewrite npm install -g to use Robodeck's prefix
+/// Rewrite npm install -g to use RigStack's prefix
 fn rewrite_npm_global(cmd: &str) -> String {
     let trimmed = cmd.trim();
-    // npm install -g pkg -> npm install --prefix ~/.robodeck/npm-global -g pkg
+    // npm install -g pkg -> npm install --prefix ~/.rigstack/npm-global -g pkg
     if trimmed.starts_with("npm install") && trimmed.contains("-g") {
         let prefix = npm_prefix_dir();
         return trimmed.replacen("npm install", &format!("npm install --prefix {}", prefix.display()), 1);
@@ -173,7 +173,7 @@ fn which_exists(bin: &str) -> bool {
     }
 }
 
-/// Rewrite a pip/python command to use the Robodeck venv
+/// Rewrite a pip/python command to use the RigStack venv
 fn rewrite_for_venv(cmd: &str) -> String {
     let trimmed = cmd.trim();
 
@@ -305,7 +305,7 @@ pub async fn run_install(window: Window, cmd: String, tool_id: String) -> Result
         || (trimmed.starts_with("python") && trimmed.contains("-m pip"));
     let is_npm_global = trimmed.starts_with("npm install") && trimmed.contains("-g");
 
-    // Resolve the command to use Robodeck-managed environments
+    // Resolve the command to use RigStack-managed environments
     let resolved = if is_pip {
         if let Err(e) = ensure_venv(&window, &tool_id) {
             emit_done(&window, &tool_id, false, &format!("[ERROR] {}", e));
@@ -359,7 +359,7 @@ fn derive_uninstall_cmd(install_cmd: &str) -> Option<String> {
         return Some(format!("{} uninstall -y {}", venv_pip(), package));
     }
 
-    // npm install -g pkg -> npm uninstall --prefix ~/.robodeck/npm-global -g pkg
+    // npm install -g pkg -> npm uninstall --prefix ~/.rigstack/npm-global -g pkg
     if trimmed.starts_with("npm install") && trimmed.contains("-g") {
         let package = trimmed.split_whitespace().last()?;
         let prefix = npm_prefix_dir();

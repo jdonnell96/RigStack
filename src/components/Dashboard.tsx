@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { useRobodeckStore } from "../store/toolStore";
+import { useRigstackStore } from "../store/toolStore";
 import { useHealthCheckPoller } from "../hooks/useToolStatus";
 import { useDockerPoller } from "../hooks/useDockerStatus";
 import { StageFilter } from "./StageFilter";
@@ -11,13 +11,13 @@ import { InstallDrawer } from "./InstallDrawer";
 import { EmptyState } from "./EmptyState";
 
 export function Dashboard() {
-  const manifests = useRobodeckStore((s) => s.manifests);
-  const search = useRobodeckStore((s) => s.search);
-  const activeStage = useRobodeckStore((s) => s.activeStage);
-  const platform = useRobodeckStore((s) => s.platform);
-  const loading = useRobodeckStore((s) => s.loading);
-  const statuses = useRobodeckStore((s) => s.statuses);
-  const setToolStatus = useRobodeckStore((s) => s.setToolStatus);
+  const manifests = useRigstackStore((s) => s.manifests);
+  const search = useRigstackStore((s) => s.search);
+  const activeStage = useRigstackStore((s) => s.activeStage);
+  const platform = useRigstackStore((s) => s.platform);
+  const loading = useRigstackStore((s) => s.loading);
+  const statuses = useRigstackStore((s) => s.statuses);
+  const setToolStatus = useRigstackStore((s) => s.setToolStatus);
 
   useHealthCheckPoller();
   useDockerPoller();
@@ -74,7 +74,7 @@ export function Dashboard() {
       <aside className="w-56 border-r border-surface-overlay flex flex-col p-4 gap-4">
         <div className="flex items-center gap-2 mb-2">
           <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white font-bold text-sm">R</div>
-          <div className="text-xl font-bold tracking-tight">Robodeck</div>
+          <div className="text-xl font-bold tracking-tight">RigStack</div>
         </div>
 
         {/* Status summary */}

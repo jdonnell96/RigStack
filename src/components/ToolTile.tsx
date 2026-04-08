@@ -1,4 +1,4 @@
-import { useRobodeckStore } from "../store/toolStore";
+import { useRigstackStore } from "../store/toolStore";
 import { tauri } from "../lib/tauri";
 import { openUrl } from "../lib/shell";
 import type { ToolManifest, ToolStatus } from "../types/tool";
@@ -33,16 +33,16 @@ const BG_BY_STATUS: Record<ToolStatus, string> = {
 };
 
 export function ToolTile({ manifest }: ToolTileProps) {
-  const status = useRobodeckStore((s) => s.statuses[manifest.id]) ?? "not_installed";
-  const platform = useRobodeckStore((s) => s.platform);
-  const setStatus = useRobodeckStore((s) => s.setToolStatus);
-  const setPid = useRobodeckStore((s) => s.setPid);
-  const pids = useRobodeckStore((s) => s.pids);
-  const removePid = useRobodeckStore((s) => s.removePid);
-  const setActiveInstall = useRobodeckStore((s) => s.setActiveInstall);
-  const lastError = useRobodeckStore((s) => s.errors[manifest.id]);
-  const setError = useRobodeckStore((s) => s.setError);
-  const clearInstallLog = useRobodeckStore((s) => s.clearInstallLog);
+  const status = useRigstackStore((s) => s.statuses[manifest.id]) ?? "not_installed";
+  const platform = useRigstackStore((s) => s.platform);
+  const setStatus = useRigstackStore((s) => s.setToolStatus);
+  const setPid = useRigstackStore((s) => s.setPid);
+  const pids = useRigstackStore((s) => s.pids);
+  const removePid = useRigstackStore((s) => s.removePid);
+  const setActiveInstall = useRigstackStore((s) => s.setActiveInstall);
+  const lastError = useRigstackStore((s) => s.errors[manifest.id]);
+  const setError = useRigstackStore((s) => s.setError);
+  const clearInstallLog = useRigstackStore((s) => s.clearInstallLog);
   const [confirmCmd, setConfirmCmd] = useState<string | null>(null);
   const [confirmUninstall, setConfirmUninstall] = useState(false);
 

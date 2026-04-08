@@ -22,7 +22,7 @@ export function ProGate({ feature, requiredTier, children }: ProGateProps) {
         <span className="text-accent">{requiredTier}</span> plan.
       </p>
       <a
-        href="https://robodeck.dev/pricing"
+        href="https://rigstack.dev/pricing"
         target="_blank"
         rel="noopener noreferrer"
         className="text-sm text-accent hover:underline"

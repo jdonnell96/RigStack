@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { useRobodeckStore } from "../store/toolStore";
+import { useRigstackStore } from "../store/toolStore";
 import { tauri } from "../lib/tauri";
 
 export function useDockerPoller() {
-  const setDockerRunning = useRobodeckStore((s) => s.setDockerRunning);
+  const setDockerRunning = useRigstackStore((s) => s.setDockerRunning);
 
   useEffect(() => {
     async function check() {

@@ -2,7 +2,7 @@ import { create } from "zustand";
 import type { ToolManifest, ToolStatus, Stage } from "../types/tool";
 import type { Tier } from "../lib/tier";
 
-interface RobodeckState {
+interface RigstackState {
   platform: string;
   manifests: ToolManifest[];
   statuses: Record<string, ToolStatus>;
@@ -34,7 +34,7 @@ interface RobodeckState {
   setSystemInfo: (info: Record<string, boolean>) => void;
 }
 
-export const useRobodeckStore = create<RobodeckState>((set) => ({
+export const useRigstackStore = create<RigstackState>((set) => ({
   platform: "unknown",
   manifests: [],
   statuses: {},

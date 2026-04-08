@@ -1,8 +1,8 @@
-import { useRobodeckStore } from "../store/toolStore";
+import { useRigstackStore } from "../store/toolStore";
 
 export function DockerStatus() {
-  const dockerRunning = useRobodeckStore((s) => s.dockerRunning);
-  const systemInfo = useRobodeckStore((s) => s.systemInfo);
+  const dockerRunning = useRigstackStore((s) => s.dockerRunning);
+  const systemInfo = useRigstackStore((s) => s.systemInfo);
 
   const prereqs = [
     { key: "python", label: "Python" },

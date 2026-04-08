@@ -1,18 +1,18 @@
-# Contributing to Robodeck
+# Contributing to RigStack
 
 ## Requesting a New Tool
 
-Open a [GitHub Issue](https://github.com/robodeck-dev/robodeck/issues/new) with:
+Open a [GitHub Issue](https://github.com/rigstack-dev/rigstack/issues/new) with:
 
 1. Tool name and GitHub repo URL
 2. What category it falls under (capture, annotate, train, simulate, infra)
 3. How it's typically installed (pip, docker, npm, etc.)
 
-The Robodeck team will review the request and create the manifest if approved.
+The RigStack team will review the request and create the manifest if approved.
 
 ## Tool Manifests
 
-Tool manifests live in `tools/` as JSON files. **Only the Robodeck team creates and modifies manifests** to ensure all install commands are safe and verified.
+Tool manifests live in `tools/` as JSON files. **Only the RigStack team creates and modifies manifests** to ensure all install commands are safe and verified.
 
 If you notice a version is outdated, please open an issue — our nightly CI also catches these automatically.
 

@@ -29,4 +29,4 @@ assignees: ""
 
 ## Environment
 - OS: <!-- e.g., macOS 14.2, Windows 11, Ubuntu 22.04 -->
-- Robodeck version: <!-- e.g., 0.1.0 -->
+- RigStack version: <!-- e.g., 0.1.0 -->

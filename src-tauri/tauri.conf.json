@@ -1,8 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/nicbarker/Tauri/main/packages/tauri-cli/config.schema.json",
-  "productName": "Robodeck",
+  "productName": "RigStack",
   "version": "0.1.0",
-  "identifier": "dev.robodeck.app",
+  "identifier": "dev.rigstack.app",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Robodeck",
+        "title": "RigStack",
         "width": 1200,
         "height": 800,
         "minWidth": 900,
@@ -23,7 +23,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://registry.robodeck.dev; img-src 'self' data: https:"
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://raw.githubusercontent.com https://api.github.com https://registry.rigstack.dev; img-src 'self' data: https:"
     }
   },
   "bundle": {

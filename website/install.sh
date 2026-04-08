@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-REPO="jdonnell96/Robodeck"
+REPO="jdonnell96/RigStack"
 LATEST=$(curl -sL "https://api.github.com/repos/${REPO}/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
 
 if [ -z "$LATEST" ]; then
@@ -10,7 +10,7 @@ if [ -z "$LATEST" ]; then
 fi
 
 echo ""
-echo "  Robodeck ${LATEST}"
+echo "  RigStack ${LATEST}"
 echo ""
 
 OS=$(uname -s)
@@ -19,9 +19,9 @@ ARCH=$(uname -m)
 case "$OS" in
   Darwin)
     if [ "$ARCH" = "arm64" ]; then
-      ASSET="Robodeck_${LATEST#v}_aarch64.dmg"
+      ASSET="RigStack_${LATEST#v}_aarch64.dmg"
     else
-      ASSET="Robodeck_${LATEST#v}_x64.dmg"
+      ASSET="RigStack_${LATEST#v}_x64.dmg"
     fi
     URL="https://github.com/${REPO}/releases/download/${LATEST}/${ASSET}"
     echo "  Downloading ${ASSET}..."
@@ -29,19 +29,19 @@ case "$OS" in
     echo ""
     echo "  Opening installer..."
     open "/tmp/${ASSET}"
-    echo "  Done. Drag Robodeck to Applications to finish installing."
+    echo "  Done. Drag RigStack to Applications to finish installing."
     ;;
   Linux)
-    ASSET="robodeck_${LATEST#v}_amd64.AppImage"
+    ASSET="rigstack_${LATEST#v}_amd64.AppImage"
     URL="https://github.com/${REPO}/releases/download/${LATEST}/${ASSET}"
     INSTALL_DIR="${HOME}/.local/bin"
     mkdir -p "$INSTALL_DIR"
     echo "  Downloading ${ASSET}..."
-    curl -fSL -o "${INSTALL_DIR}/robodeck" "$URL"
-    chmod +x "${INSTALL_DIR}/robodeck"
+    curl -fSL -o "${INSTALL_DIR}/rigstack" "$URL"
+    chmod +x "${INSTALL_DIR}/rigstack"
     echo ""
-    echo "  Installed to ${INSTALL_DIR}/robodeck"
-    echo "  Run 'robodeck' to launch."
+    echo "  Installed to ${INSTALL_DIR}/rigstack"
+    echo "  Run 'rigstack' to launch."
     if ! echo "$PATH" | grep -q "$INSTALL_DIR"; then
       echo ""
       echo "  Note: Add ${INSTALL_DIR} to your PATH if it isn't already:"

@@ -1,4 +1,4 @@
-import { useRobodeckStore } from "../store/toolStore";
+import { useRigstackStore } from "../store/toolStore";
 import type { Stage } from "../types/tool";
 
 const STAGES: { key: Stage | "all"; label: string }[] = [
@@ -11,8 +11,8 @@ const STAGES: { key: Stage | "all"; label: string }[] = [
 ];
 
 export function StageFilter() {
-  const activeStage = useRobodeckStore((s) => s.activeStage);
-  const setActiveStage = useRobodeckStore((s) => s.setActiveStage);
+  const activeStage = useRigstackStore((s) => s.activeStage);
+  const setActiveStage = useRigstackStore((s) => s.setActiveStage);
 
   return (
     <nav className="flex flex-col gap-1">
