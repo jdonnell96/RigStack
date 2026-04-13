@@ -31,6 +31,9 @@ export interface ToolManifest {
   install_cmd: string;
   install_cmd_win?: string;
   install_cmd_linux?: string;
+  install_url?: string;
+  install_url_win?: string;
+  install_url_linux?: string;
   update_cmd?: string;
   update_cmd_win?: string;
   update_cmd_linux?: string;

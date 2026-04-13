@@ -61,6 +61,12 @@ export function ToolTile({ manifest }: ToolTileProps) {
     manifest.version !== undefined &&
     installedVersion !== manifest.version;
 
+  function getInstallUrl(): string | null {
+    if (platform === "windows" && manifest.install_url_win) return manifest.install_url_win;
+    if (platform === "linux" && manifest.install_url_linux) return manifest.install_url_linux;
+    return manifest.install_url ?? null;
+  }
+
   function getInstallCmd(): string {
     if (platform === "windows" && manifest.install_cmd_win) return manifest.install_cmd_win;
     if (platform === "linux" && manifest.install_cmd_linux) return manifest.install_cmd_linux;
@@ -227,15 +233,24 @@ export function ToolTile({ manifest }: ToolTileProps) {
 
         {/* Action buttons */}
         <div className="flex items-center gap-2 mb-3">
-          {status === "not_installed" && (
-            <ActionButton
-              label="Install"
-              onClick={handleInstall}
-              variant="primary"
-              disabled={anyInstalling}
-              title={anyInstalling ? "Another install is in progress" : undefined}
-            />
-          )}
+          {status === "not_installed" && (() => {
+            const installUrl = getInstallUrl();
+            return installUrl ? (
+              <ActionButton
+                label="Download"
+                onClick={() => openUrl(installUrl)}
+                variant="primary"
+              />
+            ) : (
+              <ActionButton
+                label="Install"
+                onClick={handleInstall}
+                variant="primary"
+                disabled={anyInstalling}
+                title={anyInstalling ? "Another install is in progress" : undefined}
+              />
+            );
+          })()}
           {status === "installed" && (
             <>
               <ActionButton label="Launch" onClick={handleLaunch} variant="success" />
